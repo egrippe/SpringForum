@@ -109,15 +109,17 @@ public class UserController {
             throw new ServletException("User name does already exist.");
         }
 
+        String clearTextPassword = user.getPassword();
+
         SCryptPasswordEncoder scrypt = new SCryptPasswordEncoder();
-        user.setPassword(scrypt.encode(user.getPassword()));
+        user.setPassword(scrypt.encode(clearTextPassword));
 
         user.addRole(roleRepository.findByName("user"));
         user = userRepository.save(user);
 
         UserLogin ul = new UserLogin();
         ul.name = user.getName();
-        ul.password = user.getPassword();
+        ul.password = clearTextPassword;
 
         return login(ul);
     }
