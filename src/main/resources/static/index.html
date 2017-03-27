@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Forum Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- import jquery first as bootstrap depends on it -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+
+    <!-- import bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- Angular application -->
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+
+<!-- define bootstrap container for our forum -->
+<div class="container" ng-app="myApp" ng-controller="MainCtrl">
+
+    <!-- LOGIN VIEW -->
+    <div class="row" ng-show="!loggedIn()">
+
+        <!-- login form -->
+        <div class="col-sm-offset-4 col-sm-4 well">
+            <h3 class="text-center">Login:</h3>
+            <form class="form-horizontal" ng-submit="login()" id="loginForm">
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="login.username">Username:</label>
+                    <div class="col-sm-8">
+                        <input type="text" ng-model="login.username" class="form-control" id="login.username" placeholder="Enter username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="login.pwd">Password:</label>
+                    <div class="col-sm-8">
+                        <input type="password" ng-model="login.password" class="form-control" id="login.pwd" placeholder="Enter password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-8">
+                        <button type="submit" class="btn btn-default">Login</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Login error box -->
+            <div class="alert alert-danger" role="alert" ng-show="loginError">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                {{ loginError.data.message }}
+            </div>
+
+            <!-- create new user form -->
+            <h3 class="text-center">Create new user:</h3>
+            <form class="form-horizontal" ng-submit="createNewUser()" id="newUserForm">
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="new.username">Username:</label>
+                    <div class="col-sm-8">
+                        <input type="text" ng-model="newUser.username" class="form-control" id="new.username" placeholder="Enter username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="new.email">Email:</label>
+                    <div class="col-sm-8">
+                        <input type="email" ng-model="newUser.email" class="form-control" id="new.email" placeholder="Enter email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="new.pwd">Password:</label>
+                    <div class="col-sm-8">
+                        <input type="password" ng-model="newUser.password" class="form-control" id="new.pwd" placeholder="Enter password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-8">
+                        <button type="submit" class="btn btn-default">Create User</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- create new user error box -->
+            <div class="alert alert-danger" role="alert" ng-show="createUserError">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                {{ createUserError.data.message }}
+            </div>
+
+        </div>
+    </div> <!-- LOGIN VIEW -->
+
+
+    <!-- LOGGED IN VIEW -->
+    <div ng-show="loggedIn()">
+
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Forum</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li><a href="#" ng-click="viewThreads()">Threads</a></li>
+                    <!-- <li><a href="#">Users</a></li> -->
+                </ul>
+                <ul class="nav navbar-nav">
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Thread Categories<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="category in categories" ng-click="getThreadsInCategory(category)"><a href="#">{{category.name}}</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav">
+                    <li><a href="#" ng-click="viewTrendingThreads()">Trending threads</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">{{ userName }}</a></li>
+                    <li><a href="#" ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- THREAD VIEW -->
+        <div class="container" ng-show="threadView">
+
+            <!-- Page header -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="page-header">Forum Threads<br>
+                        <small>Select a thread or Create a new one.</small>
+                    </h1>
+                </div>
+            </div>
+            <!-- /.row -->
+
+            <!-- list forum threads -->
+            <div class="row" ng-repeat="thread in threads">
+                <div class="col-md-2">
+                     {{ thread.username }}<br>
+                    {{ thread.date_string}}
+                </div>
+                <div class="col-md-6 well well-sm" ng-click="viewPosts(thread)">
+                    <h4>{{ thread.title }}</h4>
+                    <small>{{ thread.description }}</small>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-danger" ng-click="deleteThread(thread)" ng-show="hasRoleAdmin">DELETE</button>
+                </div>
+
+
+            </div>
+            <!-- /.row -->
+
+            <hr>
+
+            <!-- ADD THREAD FORM -->
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Create new thread</div>
+                        <div class="panel-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="sel1">Category:</label>
+                                    <select class="form-control" id="sel1" ng-model="newThread.category">
+                                        <option ng-repeat="category in categories" selected>{{ category.id + '. ' + category.name }}</option>
+                                    </select>
+                                    <label for="newthread">Title:</label>
+                                    <input type="text" class="form-control" ng-model="newThread.title" rows="5" id="newthread"></input>
+                                    <label for="description">Thread description:</label>
+                                    <textarea id="description" class="form-control" ng-model="newThread.description" rows="3"></textarea>
+                                </div>
+                                <button ng-click="addThread()" type="submit" class="btn btn-default">Create</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+        </div>
+
+        <!-- POST VIEW -->
+        <div class="container" ng-show="postView">
+
+            <!-- Page header -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="page-header">{{ currentThread.thread.title}}<br>
+                        <small>{{ currentThread.thread.description}}</small>
+                    </h1>
+                </div>
+            </div>
+            <!-- /.row -->
+
+            <!-- list posts -->
+            <div class="row" ng-repeat="post_data in posts">
+                <!-- user info -->
+                <div class="col-md-2">
+                    {{ post_data.username }}<br>
+                    {{ post_data.date_string }}
+                </div>
+                <!-- post content -->
+                <div class="col-md-6 well well-sm">
+                    <p>{{ post_data.post.content }}</p>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-danger" ng-click="deletePost(post)" ng-show="hasRoleAdmin">DELETE</button>
+                </div>
+            </div>
+
+            <!-- add post form -->
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Add post</div>
+                        <div class="panel-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="newpost">Add post:</label>
+                                    <textarea class="form-control" ng-model="post.content" rows="5" id="newpost"></textarea>
+                                </div>
+                                <button ng-click="addPost()" type="submit" class="btn btn-default">Submit new post</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+
+        </div> <!-- post view -->
+
+    </div> <!-- logged in view -->
+
+</div>
+
+</body>
+</html>

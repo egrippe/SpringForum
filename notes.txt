@@ -1,0 +1,12 @@
+// Create mysql database for the forum
+
+create database forum_db;
+create user 'springuser'@'localhost' identified by 'ThePassword';
+grant all on forum_db.* to 'springuser'@'localhost';
+
+// database config file:
+src/main/resources/application.properties
+
+// Run
+./gradlew bootRun
+

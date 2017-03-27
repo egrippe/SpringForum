@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forum</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script> <!-- Used for routing to different pages-->
+</head>
+
+<body > 
+<h1>  Forum main thread page view  </h1>
+<!-- The ng-app directive tells AngularJS that the <div> element is the "owner" of an AngularJSapplication. -->
+<!-- basically says: this div element will be a view controlled by ctrl1forumthreads. the $scope variable will provide data to our view-->
+<div ng-app = app_forumMain ng-controller ="ctrl1forumMain"> 
+ 	
+ 	<ul> <!-- unordered list use ol for ordered. order by timestamp on latest post maybe??? -->
+	    <li ng-repeat="x in threads">
+	    	<a href="#thread" ng-click="enterThread(x)"> {{x.threadname}}</a> <!--  -->
+	    </li>
+  	</ul>
+
+</div>
+
+<script src = "forumMain.js"></script>
+
+</body>
+</html>

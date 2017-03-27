@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- html page to display posts for a specific thread -->
+
+<!-- css style for each post in the thread  taken from stackoverflow here: http://stackoverflow.com/questions/995168/textarea-to-resize-based-on-content-length. Maybe skip these and and bootstrapp later???-->
+<style> 
+.divtext {
+    border: ridge 2px;
+    padding: 5px;
+    width: 20em;
+    min-height: 3em;
+    overflow: auto;
+}
+</style>
+
+
+<html>
+<head>
+    <title>Thread</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script> <!-- Used for routing to different pages-->
+</head>
+
+<body > 
+<h3 id="threadTitle" ng-app = app_thread ng-controller = "ctrlThreadName">{{thread.name}}</h3>
+
+<div ng-app = app_thread ng-controller ="ctrl1thread"> 
+ 	
+ 	<ul> <!-- unordered list use ol for ordered. order by timestamp on latest post maybe??? -->
+	    <li ng-repeat="x in posts">
+	    	<p id="userName">User with id {{x.userid}} wrote: </p> <!-- add time and date ???  -->
+	    	<div class="divtext">{{x.text}}</div>
+	    	<br>
+	    </li>
+  	</ul>
+
+</div>
+
+<script src = "thread.js"></script>
+
+
+</body>
+</html>
